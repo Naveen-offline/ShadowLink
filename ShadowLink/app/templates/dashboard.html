@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% set sidebar = true %}{% set active = 'dashboard' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+  <div><h1 class="h3 mb-0">Security dashboard</h1><div class="text-muted small">Statistics are calculated from your saved scans.</div></div>
+  <div class="d-flex flex-wrap gap-2">
+    <a class="btn btn-accent" href="{{ url_for('scanner.scanner_page') }}"><i class="fa-solid fa-plus me-1"></i>Scan new URL</a>
+    <a class="btn btn-outline-soft" href="{{ url_for('history.history_page') }}"><i class="fa-solid fa-clock-rotate-left me-1"></i>History</a>
+    <a class="btn btn-outline-soft" href="{{ url_for('history.history_page') }}" title="Open a scan from history, then export its PDF"><i class="fa-solid fa-file-pdf me-1"></i>Generate report</a>
+    <a class="btn btn-outline-soft" href="{{ url_for('auth.settings') }}"><i class="fa-solid fa-gear me-1"></i>Settings</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4" id="stat-cards">
+  <div class="col-sm-6 col-xl-3"><div class="sl-card stat"><div class="icon i-accent"><i class="fa-solid fa-link"></i></div><div><div class="num" id="s-total">–</div><div class="lbl">Total URLs scanned</div></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="sl-card stat"><div class="icon i-danger"><i class="fa-solid fa-skull-crossbones"></i></div><div><div class="num" id="s-high">–</div><div class="lbl">High-risk URLs</div></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="sl-card stat"><div class="icon i-warn"><i class="fa-solid fa-triangle-exclamation"></i></div><div><div class="num" id="s-medium">–</div><div class="lbl">Medium-risk URLs</div></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="sl-card stat"><div class="icon i-ok"><i class="fa-solid fa-shield-halved"></i></div><div><div class="num" id="s-lower">–</div><div class="lbl">Lower-risk URLs</div></div></div></div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-lg-4"><div class="sl-card h-100"><h2 class="h6 text-muted">Risk distribution</h2><div style="position:relative;height:260px"><canvas id="chart-dist" aria-label="Risk distribution doughnut chart" role="img"></canvas></div><div id="dist-empty" class="text-muted small text-center d-none">No scans yet.</div></div></div>
+  <div class="col-lg-8"><div class="sl-card h-100"><h2 class="h6 text-muted">Daily scanning activity (14 days)</h2><div style="position:relative;height:260px"><canvas id="chart-daily" aria-label="Daily scan counts" role="img"></canvas></div></div></div>
+  <div class="col-12"><div class="sl-card"><h2 class="h6 text-muted">Average risk score trend</h2><div style="position:relative;height:220px"><canvas id="chart-trend" aria-label="Risk score trend" role="img"></canvas></div></div></div>
+</div>
+
+<div class="sl-card">
+  <h2 class="h6 text-muted mb-3">Recent scans</h2>
+  <div class="table-responsive"><table class="table table-hover align-middle mb-0">
+    <thead><tr><th>Domain</th><th>Score</th><th>Category</th><th>Scanned</th><th></th></tr></thead>
+    <tbody id="recent-body"><tr><td colspan="5" class="text-muted">Loading…</td></tr></tbody>
+  </table></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='vendor/chartjs/chart.umd.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

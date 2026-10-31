@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{% block title %}ShadowLink{% endblock %} · ShadowLink</title>
+  <link href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/fontawesome/css/all.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+{% macro brand() %}<a class="brand navbar-brand" href="{{ url_for('scanner.index') }}"><span class="logo"><i class="fa-solid fa-link-slash"></i></span>ShadowLink</a>{% endmacro %}
+{% macro flashes() %}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}<div class="alert alert-{{ cat }} alert-dismissible fade show" role="alert">{{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>{% endfor %}
+  {% endwith %}
+{% endmacro %}
+
+{% if sidebar and current_user.is_authenticated %}
+<div class="topbar-mobile">
+  {{ brand() }}
+  <button class="btn btn-outline-soft" id="sidebar-toggle" aria-label="Toggle navigation"><i class="fa-solid fa-bars"></i></button>
+</div>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="mb-4 d-none d-lg-block">{{ brand() }}</div>
+    <nav class="nav flex-column gap-1">
+      <a class="nav-link {% if active=='dashboard' %}active{% endif %}" href="{{ url_for('dashboard.dashboard') }}"><i class="fa-solid fa-gauge-high"></i>Dashboard</a>
+      <a class="nav-link {% if active=='scanner' %}active{% endif %}" href="{{ url_for('scanner.scanner_page') }}"><i class="fa-solid fa-magnifying-glass-chart"></i>Scan URL</a>
+      <a class="nav-link {% if active=='history' %}active{% endif %}" href="{{ url_for('history.history_page') }}"><i class="fa-solid fa-clock-rotate-left"></i>Scan history</a>
+      <a class="nav-link {% if active=='settings' %}active{% endif %}" href="{{ url_for('auth.settings') }}"><i class="fa-solid fa-gear"></i>Settings</a>
+      {% if current_user.is_admin %}<a class="nav-link {% if active=='admin' %}active{% endif %}" href="{{ url_for('admin.admin_page') }}"><i class="fa-solid fa-user-shield"></i>Admin</a>{% endif %}
+    </nav>
+    <div class="mt-auto pt-3 border-top" style="border-color:var(--border)!important">
+      <div class="small text-muted mb-2 text-truncate"><i class="fa-regular fa-user me-1"></i>{{ current_user.full_name }}</div>
+      <form method="post" action="{{ url_for('auth.logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-outline-soft btn-sm w-100" type="submit"><i class="fa-solid fa-right-from-bracket me-1"></i>Sign out</button>
+      </form>
+    </div>
+  </aside>
+  <main class="main" id="main">
+    {{ flashes() }}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% else %}
+<nav class="navbar navbar-expand-lg sl-nav sticky-top">
+  <div class="container">
+    {{ brand() }}
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation"><i class="fa-solid fa-bars text-white"></i></button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('scanner.index') }}#features">Features</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('scanner.index') }}#how">How it works</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('scanner.index') }}#awareness">Stay safe</a></li>
+        {% if current_user.is_authenticated %}
+          <li class="nav-item"><a class="btn btn-accent btn-sm" href="{{ url_for('dashboard.dashboard') }}">Dashboard</a></li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Sign in</a></li>
+          <li class="nav-item"><a class="btn btn-accent btn-sm" href="{{ url_for('auth.register') }}">Get started</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+<main id="main">
+  <div class="container pt-3">{{ flashes() }}</div>
+  {% block public %}{% endblock %}
+</main>
+{% endif %}
+<script src="{{ url_for('static', filename='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

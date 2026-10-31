@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% set sidebar = true %}{% set active = 'settings' %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Settings</h1>
+<div class="row g-4">
+  <div class="col-lg-5"><div class="sl-card">
+    <h2 class="h6 text-muted">Account</h2>
+    <dl class="kv"><dt>Name</dt><dd>{{ current_user.full_name }}</dd><dt>Email</dt><dd>{{ current_user.email }}</dd><dt>Role</dt><dd>{{ current_user.role }}</dd><dt>Member since</dt><dd>{{ current_user.created_at.strftime('%Y-%m-%d') }}</dd></dl>
+  </div></div>
+  <div class="col-lg-5"><div class="sl-card">
+    <h2 class="h6 text-muted mb-3">Change password</h2>
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      {% for f, ac in [(form.current,'current-password'),(form.password,'new-password'),(form.confirm,'new-password')] %}
+      <div class="mb-3">{{ f.label(class_="form-label") }}{{ f(class_="form-control", autocomplete=ac) }}{% for e in f.errors %}<div class="field-error">{{ e }}</div>{% endfor %}</div>
+      {% endfor %}
+      <button class="btn btn-accent" type="submit">Update password</button>
+    </form>
+  </div></div>
+</div>
+{% endblock %}

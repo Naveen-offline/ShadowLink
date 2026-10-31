@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block public %}
+<div class="container py-5" style="max-width:460px">
+  <div class="sl-card glow">
+    <h1 class="h4 mb-1">Welcome back</h1>
+    <p class="text-muted small mb-4">Sign in to view your scans and dashboard.</p>
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="mb-3">
+        {{ form.email.label(class_="form-label") }}
+        {{ form.email(class_="form-control", autocomplete="email", type="email") }}
+        {% for e in form.email.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="mb-3">
+        {{ form.password.label(class_="form-label") }}
+        {{ form.password(class_="form-control", autocomplete="current-password") }}
+        {% for e in form.password.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="form-check mb-3">{{ form.remember(class_="form-check-input") }} {{ form.remember.label(class_="form-check-label") }}</div>
+      <button class="btn btn-accent w-100" type="submit">Sign in</button>
+    </form>
+    <p class="small text-muted mt-3 mb-0">New here? <a href="{{ url_for('auth.register') }}">Create an account</a></p>
+  </div>
+</div>
+{% endblock %}

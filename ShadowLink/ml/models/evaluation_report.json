@@ -1,0 +1,43 @@
+{
+  "model": "RandomForest",
+  "version": "2026.10.31-5762b5b",
+  "current_test_metrics": {
+    "accuracy": 0.698,
+    "precision": 0.7209,
+    "recall": 0.6349,
+    "f1": 0.6752,
+    "confusion_matrix": [
+      [
+        9219,
+        2916
+      ],
+      [
+        4332,
+        7533
+      ]
+    ],
+    "n": 24000,
+    "roc_auc": 0.7624,
+    "brier_score": 0.1957
+  },
+  "stored_test_metrics": {
+    "accuracy": 0.698,
+    "precision": 0.7209,
+    "recall": 0.6349,
+    "f1": 0.6752,
+    "confusion_matrix": [
+      [
+        9219,
+        2916
+      ],
+      [
+        4332,
+        7533
+      ]
+    ],
+    "n": 24000,
+    "roc_auc": 0.7624,
+    "brier_score": 0.1957
+  },
+  "reproducible": true
+}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% set sidebar = true %}{% set active = 'scanner' %}
+{% block title %}Scan #{{ scan.id }}{% endblock %}
+{% macro cls(cat) %}{% if cat == 'High estimated risk' %}risk-high{% elif cat == 'Medium estimated risk' %}risk-medium{% elif cat == 'Lower estimated risk' %}risk-lower{% else %}risk-insufficient{% endif %}{% endmacro %}
+{% macro val(v) %}{% if v is none or v == '' %}<span class="text-muted">Unavailable</span>{% else %}{{ v }}{% endif %}{% endmacro %}
+{% block content %}
+{% set risk = d.get('risk', {}) %}{% set dom = d.get('domain', {}) %}{% set tls = d.get('tls', {}) %}{% set red = d.get('redirects', {}) %}{% set ml = d.get('ml', {}) %}
+{% set score = risk.get('score', 0) %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+  <div><h1 class="h3 mb-0">Analysis report <span class="text-muted">#{{ scan.id }}</span></h1><div class="text-muted small">Scanned {{ scan.created_at.strftime('%Y-%m-%d %H:%M:%S') }} UTC</div></div>
+  <div class="d-flex gap-2">
+    <a class="btn btn-accent" href="{{ url_for('reports.pdf', scan_id=scan.id) }}"><i class="fa-solid fa-file-pdf me-1"></i>Export PDF</a>
+    <a class="btn btn-outline-soft" href="{{ url_for('scanner.scanner_page') }}">Scan another</a>
+  </div>
+</div>
+
+<section class="sl-card mb-3" aria-labelledby="s1"><h2 id="s1" class="h6 text-muted mb-3">1 · URL overview</h2>
+  <dl class="kv">
+    <dt>Submitted URL</dt><dd><code>{{ scan.submitted_url }}</code></dd>
+    <dt>Normalized URL</dt><dd><code>{{ scan.normalized_url }}</code></dd>
+    <dt>Hostname</dt><dd>{{ d.get('hostname') }}</dd>
+    <dt>Registered domain</dt><dd>{{ scan.registered_domain }}</dd>
+    <dt>Scan ID</dt><dd>{{ scan.id }}</dd>
+  </dl>
+</section>
+
+<section class="sl-card glow mb-3" aria-labelledby="s2"><h2 id="s2" class="h6 text-muted mb-3">2 · Risk assessment</h2>
+  <div class="row g-4 align-items-center">
+    <div class="col-md-4 text-center">
+      <div class="score-big {% if score >= 60 %}text-danger{% elif score >= 30 %}text-warning{% else %}text-success{% endif %}">{{ score }}<span class="fs-5 text-muted"> /100</span></div>
+      <span class="badge-risk {{ cls(risk.get('category')) }} mt-2 d-inline-block">{{ risk.get('category') }}</span>
+    </div>
+    <div class="col-md-8">
+      <div class="meter mb-2" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ score }}" aria-label="Estimated risk score">
+        <span style="width:{{ score }}%;background:linear-gradient(90deg,#22C55E,#F59E0B 50%,#EF4444)"></span>
+      </div>
+      <div class="d-flex justify-content-between small text-muted mb-3"><span>0 lower</span><span>30</span><span>60</span><span>100 high</span></div>
+      <h3 class="h6">Main contributing indicators</h3>
+      {% if risk.get('top_contributors') %}
+      <ul class="mb-3">{% for c in risk.top_contributors %}<li><strong>+{{ c.points }}</strong> {{ c.reason }} <span class="text-muted small">({{ c.group }})</span></li>{% endfor %}</ul>
+      {% else %}<p class="text-muted mb-3">No indicators contributed to the score.</p>{% endif %}
+      <div class="small text-muted">Score breakdown — URL: {{ risk.get('breakdown', {}).get('url_structure', 0) }}, Domain: {{ risk.get('breakdown', {}).get('domain', 0) }}, TLS: {{ risk.get('breakdown', {}).get('tls', 0) }}, Redirects: {{ risk.get('breakdown', {}).get('redirects', 0) }}, ML: {{ risk.get('breakdown', {}).get('machine_learning', 0) }}</div>
+    </div>
+  </div>
+  <div class="notice mt-3"><strong>Evidence limitations.</strong> {{ risk.get('independent_checks_completed', 0) }} independent check(s) completed.
+    {% if risk.get('unavailable_checks') %}Not available: {{ risk.unavailable_checks | join(', ') }}.{% endif %}
+    {{ risk.get('disclaimer') }}</div>
+</section>
+
+<section class="sl-card mb-3" aria-labelledby="s3"><h2 id="s3" class="h6 text-muted mb-3">3 · URL structure analysis</h2>
+  <div class="row g-3">
+    <div class="col-lg-6"><dl class="kv">{% for k, v in d.get('features', {}).items() %}<dt>{{ k.replace('_', ' ') }}</dt><dd>{{ v }}</dd>{% endfor %}</dl></div>
+    <div class="col-lg-6"><h3 class="h6">Observed indicators</h3>
+      {% for i in d.get('indicators', []) %}<div class="mb-2"><span class="sev sev-{{ i.severity }}">{{ i.severity }}</span> <strong>{{ i.indicator_name }}</strong>{% if i.indicator_value %} <span class="text-muted">({{ i.indicator_value }})</span>{% endif %}<div class="small text-muted">{{ i.explanation }}</div></div>
+      {% else %}<p class="text-muted">No notable structural indicators were observed. This does not mean the link is safe.</p>{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="sl-card mb-3" aria-labelledby="s4"><h2 id="s4" class="h6 text-muted mb-3">4 · Domain intelligence</h2>
+  <dl class="kv">
+    <dt>DNS checked</dt><dd>{{ 'Yes' if dom.get('dns_checked') else 'No' }}{% if dom.get('dns_error') %} — {{ dom.dns_error }}{% endif %}</dd>
+    <dt>Resolved IPs</dt><dd>{{ val(dom.get('resolved_ips', []) | join(', ')) }}</dd>
+    <dt>Nameservers</dt><dd>{{ val(dom.get('nameservers', []) | join(', ')) }}</dd>
+    {% for rt in ['MX', 'TXT'] %}{% if dom.get('records', {}).get(rt) %}<dt>{{ rt }} records</dt><dd>{{ dom.records[rt][:3] | join(' | ') }}</dd>{% endif %}{% endfor %}
+    <dt>Registration data</dt><dd>{{ 'Available' if dom.get('rdap_available') else 'Unavailable' }}</dd>
+    <dt>Creation date</dt><dd>{{ val(dom.get('creation_date')) }}</dd>
+    <dt>Domain age</dt><dd>{% if dom.get('domain_age_days') is not none %}{{ dom.domain_age_days }} days{% else %}<span class="text-muted">Unavailable</span>{% endif %}</dd>
+    {% if dom.get('notes') %}<dt>Notes</dt><dd>{{ dom.notes | join(' ') }}</dd>{% endif %}
+  </dl>
+</section>
+
+<section class="sl-card mb-3" aria-labelledby="s5"><h2 id="s5" class="h6 text-muted mb-3">5 · Certificate analysis</h2>
+  <dl class="kv">
+    <dt>Status</dt><dd>{{ (tls.get('status') or 'unavailable').replace('_', ' ') | title }}</dd>
+    <dt>Issuer</dt><dd>{{ val(tls.get('issuer')) }}</dd>
+    <dt>Valid until</dt><dd>{{ val(tls.get('not_after')) }}</dd>
+    <dt>Details</dt><dd>{{ tls.get('message') }}</dd>
+  </dl>
+</section>
+
+<section class="sl-card mb-3" aria-labelledby="s6"><h2 id="s6" class="h6 text-muted mb-3">6 · Redirect analysis</h2>
+  <p class="mb-2">{{ red.get('message') }}</p>
+  {% if red.get('chain') %}<ol>{% for h in red.chain %}<li><code>{{ h.url }}</code> <span class="text-muted">({{ h.status }})</span></li>{% endfor %}</ol>{% endif %}
+  {% for f in red.get('flags', []) %}<div><span class="sev sev-medium">flag</span> {{ f }}</div>{% endfor %}
+</section>
+
+<section class="sl-card mb-3" aria-labelledby="s7"><h2 id="s7" class="h6 text-muted mb-3">7 · Machine learning</h2>
+  {% if ml.get('available') %}
+  <dl class="kv">
+    <dt>Predicted class</dt><dd>{{ ml.predicted_class }}</dd>
+    <dt>Model score</dt><dd>{{ ml.phishing_score }} <span class="text-muted small">(uncalibrated)</span></dd>
+    <dt>Model</dt><dd>{{ ml.model_name }} · version {{ ml.model_version }}</dd>
+    <dt>Predicted at</dt><dd>{{ ml.predicted_at }}</dd>
+  </dl>
+  <div class="notice mt-2">{{ ml.score_note }} The model only sees characteristics of the registered domain (subdomains are scored by the rule-based indicators).</div>
+  <details class="mt-3"><summary class="text-muted">Registered-domain features used by the model</summary>
+    <dl class="kv mt-2">{% for k, v in ml.features.items() %}<dt>{{ k.replace('_', ' ') }}</dt><dd>{{ v }}</dd>{% endfor %}</dl></details>
+  {% else %}<p class="text-muted mb-0">The model was unavailable: {{ ml.get('message') }}</p>{% endif %}
+</section>
+
+<section class="sl-card mb-3" aria-labelledby="s8"><h2 id="s8" class="h6 text-muted mb-3">8 · Recommendations</h2>
+  <ul class="mb-0">{% for r in d.get('recommendations', []) %}<li class="mb-1">{{ r }}</li>{% endfor %}</ul>
+</section>
+{% endblock %}

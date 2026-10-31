@@ -1,0 +1,118 @@
+{
+  "version": "2026.10.31-5762b5b",
+  "model_name": "RandomForest",
+  "trained_at": "2026-10-31T04:32:38+00:00",
+  "sha256": "5762b5babfbdbd7e1a43cf95c4caac551b136ab12ccc08030028a4e2010debd3",
+  "feature_names": [
+    "domain_length",
+    "num_dots",
+    "num_hyphens",
+    "num_digits",
+    "digit_ratio",
+    "entropy",
+    "has_ip_host",
+    "has_punycode",
+    "sld_length",
+    "sld_hyphens",
+    "sld_digit_ratio",
+    "sld_vowel_ratio",
+    "sld_max_digit_run",
+    "tld_length",
+    "keyword_count"
+  ],
+  "seed": 42,
+  "sklearn_version": "1.9.1",
+  "dataset": {
+    "file": "hostnames.csv",
+    "rows": 120000,
+    "phishing": 60000,
+    "benign": 60000,
+    "train": 72000,
+    "validation": 24000,
+    "test": 24000
+  },
+  "selection_rule": "highest validation F1 (ties: ROC-AUC)",
+  "results": {
+    "LogisticRegression": {
+      "validation": {
+        "accuracy": 0.6797,
+        "precision": 0.7014,
+        "recall": 0.6107,
+        "f1": 0.6529,
+        "confusion_matrix": [
+          [
+            9082,
+            3078
+          ],
+          [
+            4609,
+            7231
+          ]
+        ],
+        "n": 24000,
+        "roc_auc": 0.7428,
+        "brier_score": 0.2029
+      },
+      "test": {
+        "accuracy": 0.6809,
+        "precision": 0.7053,
+        "recall": 0.6089,
+        "f1": 0.6536,
+        "confusion_matrix": [
+          [
+            9116,
+            3019
+          ],
+          [
+            4640,
+            7225
+          ]
+        ],
+        "n": 24000,
+        "roc_auc": 0.7411,
+        "brier_score": 0.2041
+      }
+    },
+    "RandomForest": {
+      "validation": {
+        "accuracy": 0.6972,
+        "precision": 0.7186,
+        "recall": 0.6348,
+        "f1": 0.6741,
+        "confusion_matrix": [
+          [
+            9217,
+            2943
+          ],
+          [
+            4324,
+            7516
+          ]
+        ],
+        "n": 24000,
+        "roc_auc": 0.7646,
+        "brier_score": 0.1946
+      },
+      "test": {
+        "accuracy": 0.698,
+        "precision": 0.7209,
+        "recall": 0.6349,
+        "f1": 0.6752,
+        "confusion_matrix": [
+          [
+            9219,
+            2916
+          ],
+          [
+            4332,
+            7533
+          ]
+        ],
+        "n": 24000,
+        "roc_auc": 0.7624,
+        "brier_score": 0.1957
+      }
+    }
+  },
+  "notes": "Hostname-only features. Metrics are on a domain-grouped holdout of this specific dataset and will likely overstate real-world performance; probabilities are uncalibrated."
+}

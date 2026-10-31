@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block public %}
+<div class="container py-5 text-center" style="max-width:560px">
+  <div class="sl-card">
+    <div class="score-big grad mb-2">{{ code }}</div>
+    <h1 class="h4">{{ title }}</h1>
+    <p class="text-muted">{{ message }}</p>
+    <a class="btn btn-accent" href="{{ url_for('scanner.index') }}">Back to home</a>
+  </div>
+</div>
+{% endblock %}

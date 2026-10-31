@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% set sidebar = true %}{% set active = 'admin' %}
+{% block title %}Admin{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+  <h1 class="h3 mb-0">Administration</h1>
+  <div class="d-flex gap-2"><button class="btn btn-outline-soft btn-sm" id="reload-model">Reload model</button><button class="btn btn-outline-danger btn-sm" id="purge">Purge expired scans</button></div>
+</div>
+<div class="row g-3 mb-3" id="a-cards"></div>
+<div class="row g-3 mb-3">
+  <div class="col-lg-6"><div class="sl-card h-100"><h2 class="h6 text-muted">Application health</h2><dl class="kv" id="a-health"></dl></div></div>
+  <div class="col-lg-6"><div class="sl-card h-100"><h2 class="h6 text-muted">Model</h2><dl class="kv" id="a-model"></dl></div></div>
+  <div class="col-lg-6"><div class="sl-card h-100"><h2 class="h6 text-muted">Configuration (read-only; set via environment)</h2><dl class="kv" id="a-config"></dl></div></div>
+  <div class="col-lg-6"><div class="sl-card h-100"><h2 class="h6 text-muted">Recent analysis failures</h2><div id="a-failures" class="small"></div></div></div>
+</div>
+<div class="sl-card"><h2 class="h6 text-muted">System activity log</h2>
+  <div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>Time (UTC)</th><th>Event</th><th>Message</th></tr></thead><tbody id="a-logs"></tbody></table></div></div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/admin.js') }}"></script>{% endblock %}

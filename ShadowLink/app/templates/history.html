@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% set sidebar = true %}{% set active = 'history' %}
+{% block title %}Scan history{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Scan history</h1>
+<div class="sl-card mb-3">
+  <form id="filter-form" class="row g-2 align-items-end">
+    <div class="col-md-4"><label class="form-label" for="f-q">Search by domain or URL</label><input id="f-q" class="form-control" placeholder="example.com" maxlength="255"></div>
+    <div class="col-md-3"><label class="form-label" for="f-cat">Risk category</label>
+      <select id="f-cat" class="form-select"><option value="">All</option><option>High estimated risk</option><option>Medium estimated risk</option><option>Lower estimated risk</option><option>Insufficient evidence</option></select></div>
+    <div class="col-md-3"><label class="form-label" for="f-sort">Sort</label>
+      <select id="f-sort" class="form-select"><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select></div>
+    <div class="col-md-2 d-grid"><button class="btn btn-accent" type="submit">Apply</button></div>
+  </form>
+</div>
+<div class="sl-card">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <div class="text-muted small" id="h-count"></div>
+    <button class="btn btn-sm btn-outline-danger" id="bulk-delete" disabled><i class="fa-solid fa-trash me-1"></i>Delete selected</button>
+  </div>
+  <div class="table-responsive"><table class="table table-hover align-middle mb-0">
+    <thead><tr><th style="width:36px"><input type="checkbox" id="select-all" class="form-check-input" aria-label="Select all"></th><th>Domain</th><th>URL</th><th>Score</th><th>Category</th><th>Scanned</th><th></th></tr></thead>
+    <tbody id="h-body"><tr><td colspan="7" class="text-muted">Loading…</td></tr></tbody>
+  </table></div>
+  <nav class="d-flex justify-content-between align-items-center mt-3"><button class="btn btn-sm btn-outline-soft" id="prev">Previous</button><span class="small text-muted" id="page-info"></span><button class="btn btn-sm btn-outline-soft" id="next">Next</button></nav>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/history.js') }}"></script>{% endblock %}

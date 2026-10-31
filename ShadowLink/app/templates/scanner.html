@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% set sidebar = true %}{% set active = 'scanner' %}
+{% block title %}Scan a URL{% endblock %}
+{% block content %}
+<h1 class="h3 mb-1">Scan a URL</h1>
+<p class="text-muted mb-4">The link is analyzed on the server and is never opened in your browser.</p>
+<div class="sl-card glow mb-4">
+  <form id="scan-form" novalidate>
+    <label for="url" class="form-label">URL to analyze</label>
+    <div class="input-group input-group-lg">
+      <input id="url" name="url" type="text" class="form-control" placeholder="https://example.com/account/verify" maxlength="2048" value="{{ prefill }}" autocomplete="off" inputmode="url" required>
+      <button class="btn btn-accent px-4" type="submit" id="scan-btn"><i class="fa-solid fa-magnifying-glass me-2"></i>Analyze</button>
+    </div>
+    <div id="scan-error" class="field-error mt-2" role="alert" aria-live="polite"></div>
+  </form>
+</div>
+<div id="scan-loading" class="sl-card text-center d-none" role="status" aria-live="polite">
+  <div class="spinner-ring mb-3"></div>
+  <div>Analyzing URL structure, domain and model signals…</div>
+</div>
+<div class="notice">Only <code>http</code> and <code>https</code> links are accepted. Internal and private addresses are never contacted. Results are estimates, not guarantees.</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/scanner.js') }}"></script>{% endblock %}

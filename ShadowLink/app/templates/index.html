@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Analyze Links{% endblock %}
+{% block public %}
+<section class="hero">
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+  <div class="container text-center">
+    <span class="badge-risk risk-insufficient mb-3 d-inline-block"><i class="fa-solid fa-shield-halved me-1"></i>Intelligent link behavior analyzer</span>
+    <h1 class="mb-3">Analyze Links. <span class="grad">Understand Risks.</span> Browse Smarter.</h1>
+    <p class="lead text-muted mx-auto mb-4" style="max-width:680px">Paste a suspicious link and ShadowLink inspects its structure, domain, certificate and machine-learning signals — without ever opening it in your browser.</p>
+    <form class="scan-box mx-auto" style="max-width:760px" action="{{ url_for('scanner.scanner_page') }}" method="get" id="hero-form">
+      <div class="input-group">
+        <label for="hero-url" class="visually-hidden">URL to analyze</label>
+        <input id="hero-url" name="url" type="text" class="form-control form-control-lg" placeholder="https://example.com/login" maxlength="2048" required autocomplete="off" inputmode="url">
+        <button class="btn btn-accent btn-lg px-4" type="submit"><i class="fa-solid fa-magnifying-glass me-2"></i>Analyze</button>
+      </div>
+    </form>
+    <p class="small text-muted mt-3 mb-0">{% if not current_user.is_authenticated %}You'll be asked to sign in so your scan history stays private.{% else %}Signed in as {{ current_user.full_name }}.{% endif %}</p>
+  </div>
+</section>
+
+<section id="features" class="py-5">
+  <div class="container">
+    <h2 class="h3 text-center mb-4">What ShadowLink checks</h2>
+    <div class="row g-4">
+      {% for icon, title, text in [
+        ('fa-ruler-combined','URL structure','Length, subdomains, IP hosts, encoding tricks and other lexical indicators.'),
+        ('fa-globe','Domain intelligence','DNS records, nameservers and registration age when public data is available.'),
+        ('fa-certificate','TLS certificates','Validity, expiry and hostname match — shown as an observation, never as proof of trust.'),
+        ('fa-diagram-project','Redirect safety','Optional, SSRF-hardened redirect inspection that is disabled by default.'),
+        ('fa-brain','Machine learning','A scikit-learn model trained on public phishing data, reported with its limits.'),
+        ('fa-file-pdf','Explainable reports','Transparent scoring, clear limitations and one-click PDF export.')] %}
+      <div class="col-md-6 col-lg-4"><div class="sl-card h-100"><div class="feature-icon"><i class="fa-solid {{ icon }}"></i></div><h3 class="h6">{{ title }}</h3><p class="text-muted small mb-0">{{ text }}</p></div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section id="how" class="py-5">
+  <div class="container">
+    <h2 class="h3 text-center mb-4">How ShadowLink works</h2>
+    <div class="row g-4">
+      {% for n, t, d in [(1,'Submit','Enter a link. It is validated and normalized — never opened in your browser.'),(2,'Analyze','Structure, DNS, certificate and model checks run on our server.'),(3,'Score','Independent signals are combined into a capped, explainable 0–100 estimate.'),(4,'Decide','Read the findings and recommendations, then export a PDF if needed.')] %}
+      <div class="col-sm-6 col-lg-3"><div class="sl-card h-100"><div class="step-num mb-3">{{ n }}</div><h3 class="h6">{{ t }}</h3><p class="text-muted small mb-0">{{ d }}</p></div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section id="awareness" class="py-5">
+  <div class="container">
+    <div class="sl-card glow">
+      <h2 class="h4 mb-3"><i class="fa-solid fa-triangle-exclamation text-warning me-2"></i>Cybersecurity awareness</h2>
+      <div class="row g-3 text-muted">
+        <div class="col-md-4">Phishing sites often use <strong class="text-white">valid HTTPS certificates</strong>. The padlock means the connection is encrypted, not that the site is honest.</div>
+        <div class="col-md-4">Be wary of urgency ("account suspended"), look-alike domains and links that arrive unexpectedly. <strong class="text-white">Type the official address yourself</strong>.</div>
+        <div class="col-md-4">No tool can guarantee a link is safe. ShadowLink gives an <strong class="text-white">estimate with stated limitations</strong>, not a verdict.</div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer class="py-4 mt-4"><div class="container d-flex flex-wrap justify-content-between gap-2 small"><span>© ShadowLink — college mini project</span><span>Estimates only; never a guarantee of safety.</span></div></footer>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/landing.js') }}"></script>{% endblock %}

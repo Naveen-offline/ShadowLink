@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Create account{% endblock %}
+{% block public %}
+<div class="container py-5" style="max-width:500px">
+  <div class="sl-card glow">
+    <h1 class="h4 mb-1">Create your account</h1>
+    <p class="text-muted small mb-4">Passwords are hashed and never stored in plain text.</p>
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      {% for f, ac, t in [(form.full_name,'name','text'),(form.email,'email','email'),(form.password,'new-password','password'),(form.confirm,'new-password','password')] %}
+      <div class="mb-3">
+        {{ f.label(class_="form-label") }}
+        {{ f(class_="form-control", autocomplete=ac) }}
+        {% for e in f.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+      </div>
+      {% endfor %}
+      <div class="form-text mb-3">At least 10 characters with upper- and lower-case letters, a digit and a symbol.</div>
+      <button class="btn btn-accent w-100" type="submit">Create account</button>
+    </form>
+    <p class="small text-muted mt-3 mb-0">Already registered? <a href="{{ url_for('auth.login') }}">Sign in</a></p>
+  </div>
+</div>
+{% endblock %}

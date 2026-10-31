@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+instance/*.db
+reports/*.pdf
+ml/datasets/*.txt
+ml/datasets/*.csv
+ml/datasets/raw/
+.pytest_cache/
+
+instance/reports/
+ml/datasets/local_blocklist.txt
